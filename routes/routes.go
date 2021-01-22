@@ -3,11 +3,11 @@ package routes
 import (
 	"net/http"
 
-	"fitness-tracker/controllers"
-
+	"example.com/m/v2/controllers"
 	"github.com/gin-gonic/gin"
 )
 
+//Routes for API
 func Routes(router *gin.Engine) {
 	router.GET("/api", welcome)
 	router.GET("/api/users", controllers.GetAllUsers)
@@ -22,6 +22,7 @@ func Routes(router *gin.Engine) {
 	router.PUT("/api/exercises/:exercisesId", controllers.EditExercise)
 	router.DELETE("/api/exercises/:exercisesId", controllers.DeleteExercise)
 }
+
 func welcome(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status":  200,

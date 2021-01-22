@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"fitness-tracker/controllers"
+	"example.com/m/v2/controllers"
 
 	"github.com/go-pg/pg/v9"
 )
@@ -23,5 +23,7 @@ func Connect() *pg.DB {
 	}
 	log.Printf("Connected to db")
 	controllers.CreateUserTable(db)
+	controllers.CreateExerciseTable(db)
+	controllers.InitiateDB(db)
 	return db
 }

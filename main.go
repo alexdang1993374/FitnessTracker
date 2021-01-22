@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fitness-tracker/config"
-	"fitness-tracker/routes"
-
+	"example.com/m/v2/config"
+	"example.com/m/v2/routes"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
+
+var x int = 0
 
 func main() {
 	config.Connect()

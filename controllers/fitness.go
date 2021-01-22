@@ -11,6 +11,7 @@ import (
 	guuid "github.com/google/uuid"
 )
 
+//User Table created
 type User struct {
 	ID        string    `json:"id"`
 	Username  string    `json:"username"`
@@ -18,6 +19,7 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+//Exercise Table created
 type Exercise struct {
 	ID          string    `json:"id"`
 	Username    string    `json:"username"`
@@ -53,9 +55,10 @@ func CreateExerciseTable(db *pg.DB) error {
 	return nil
 }
 
+//GetAllUsers in request
 func GetAllUsers(c *gin.Context) {
-	var user []User
-	err := dbConnect.Model(&user).Select()
+	var users []User
+	err := dbConnect.Model(&users).Select()
 	if err != nil {
 		log.Printf("Error while getting all users, Reason: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -67,7 +70,7 @@ func GetAllUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
 		"message": "All Users",
-		"data":    user,
+		"data":    users,
 	})
 	return
 }
@@ -97,6 +100,7 @@ func CreateUser(c *gin.Context) {
 	})
 	return
 }
+
 func GetSingleUser(c *gin.Context) {
 	userId := c.Param("userId")
 	user := &User{ID: userId}
