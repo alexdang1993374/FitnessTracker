@@ -25,10 +25,12 @@ type Exercise struct {
 	Username    string    `json:"username"`
 	Description string    `json:"description"`
 	Duration    int       `json:"duration"`
+	Date        time.Time `json:"date"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+//CreateUserTable makes the user table
 func CreateUserTable(db *pg.DB) error {
 	opts := &orm.CreateTableOptions{
 		IfNotExists: true,
@@ -42,6 +44,7 @@ func CreateUserTable(db *pg.DB) error {
 	return nil
 }
 
+//CreateExerciseTable makes the exercise table
 func CreateExerciseTable(db *pg.DB) error {
 	opts := &orm.CreateTableOptions{
 		IfNotExists: true,
@@ -75,6 +78,7 @@ func GetAllUsers(c *gin.Context) {
 	return
 }
 
+//CreateUser request
 func CreateUser(c *gin.Context) {
 	var user User
 	c.BindJSON(&user)
@@ -101,9 +105,10 @@ func CreateUser(c *gin.Context) {
 	return
 }
 
+//GetSingleUser request
 func GetSingleUser(c *gin.Context) {
-	userId := c.Param("userId")
-	user := &User{ID: userId}
+	userID := c.Param("userId")
+	user := &User{ID: userID}
 	err := dbConnect.Select(user)
 	if err != nil {
 		log.Printf("Error while getting a single user, Reason: %v\n", err)
@@ -120,12 +125,14 @@ func GetSingleUser(c *gin.Context) {
 	})
 	return
 }
+
+//EditUser request
 func EditUser(c *gin.Context) {
-	userId := c.Param("userId")
+	userID := c.Param("userId")
 	var user User
 	c.BindJSON(&user)
 	username := user.Username
-	_, err := dbConnect.Model(&User{}).Set("username = ?", username).Where("id = ?", userId).Update()
+	_, err := dbConnect.Model(&User{}).Set("username = ?", username).Where("id = ?", userID).Update()
 	if err != nil {
 		log.Printf("Error, Reason: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -140,9 +147,11 @@ func EditUser(c *gin.Context) {
 	})
 	return
 }
+
+//DeleteUser request
 func DeleteUser(c *gin.Context) {
-	userId := c.Param("userId")
-	user := &User{ID: userId}
+	userID := c.Param("userId")
+	user := &User{ID: userID}
 	err := dbConnect.Delete(user)
 	if err != nil {
 		log.Printf("Error while deleting a single user, Reason: %v\n", err)
@@ -159,8 +168,9 @@ func DeleteUser(c *gin.Context) {
 	return
 }
 
-//exercise crud
+//Requests for Exercise table
 
+//GetAllExercises request
 func GetAllExercises(c *gin.Context) {
 	var exercise []Exercise
 	err := dbConnect.Model(&exercise).Select()
@@ -180,6 +190,7 @@ func GetAllExercises(c *gin.Context) {
 	return
 }
 
+//CreateExercise request
 func CreateExercise(c *gin.Context) {
 	var exercise Exercise
 	c.BindJSON(&exercise)
@@ -192,6 +203,7 @@ func CreateExercise(c *gin.Context) {
 		Username:    username,
 		Description: description,
 		Duration:    duration,
+		Date:        time.Now(),
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	})
@@ -209,9 +221,11 @@ func CreateExercise(c *gin.Context) {
 	})
 	return
 }
+
+//GetSingleExercise request
 func GetSingleExercise(c *gin.Context) {
-	exerciseId := c.Param("exerciseId")
-	exercise := &Exercise{ID: exerciseId}
+	exerciseID := c.Param("exerciseId")
+	exercise := &Exercise{ID: exerciseID}
 	err := dbConnect.Select(exercise)
 	if err != nil {
 		log.Printf("Error while getting a single exercise, Reason: %v\n", err)
@@ -228,16 +242,20 @@ func GetSingleExercise(c *gin.Context) {
 	})
 	return
 }
+
+//EditExercise request
 func EditExercise(c *gin.Context) {
-	exerciseId := c.Param("exerciseId")
+	exerciseID := c.Param("exerciseId")
 	var exercise Exercise
 	c.BindJSON(&exercise)
 	username := exercise.Username
 	description := exercise.Description
 	duration := exercise.Duration
-	_, err := dbConnect.Model(&User{}).Set("username = ?", username).Where("id = ?", exerciseId).Update()
-	_, err = dbConnect.Model(&User{}).Set("description = ?", description).Where("id = ?", exerciseId).Update()
-	_, err = dbConnect.Model(&User{}).Set("duration = ?", duration).Where("id = ?", exerciseId).Update()
+	date := exercise.Date
+	_, err := dbConnect.Model(&User{}).Set("username = ?", username).Where("id = ?", exerciseID).Update()
+	_, err = dbConnect.Model(&User{}).Set("description = ?", description).Where("id = ?", exerciseID).Update()
+	_, err = dbConnect.Model(&User{}).Set("duration = ?", duration).Where("id = ?", exerciseID).Update()
+	_, err = dbConnect.Model(&User{}).Set("date = ?", date).Where("id = ?", exerciseID).Update()
 	if err != nil {
 		log.Printf("Error, Reason: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -252,9 +270,11 @@ func EditExercise(c *gin.Context) {
 	})
 	return
 }
+
+//DeleteExercise request
 func DeleteExercise(c *gin.Context) {
-	exerciseId := c.Param("exerciseId")
-	exercise := &Exercise{ID: exerciseId}
+	exerciseID := c.Param("exerciseId")
+	exercise := &Exercise{ID: exerciseID}
 	err := dbConnect.Delete(exercise)
 	if err != nil {
 		log.Printf("Error while deleting a single exercise, Reason: %v\n", err)
@@ -273,6 +293,7 @@ func DeleteExercise(c *gin.Context) {
 
 var dbConnect *pg.DB
 
+//InitiateDB initiates the database
 func InitiateDB(db *pg.DB) {
 	dbConnect = db
 }
