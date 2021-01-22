@@ -24,8 +24,8 @@ type Exercise struct {
 	ID          string    `json:"id"`
 	Username    string    `json:"username"`
 	Description string    `json:"description"`
-	Duration    int       `json:"duration"`
-	Date        time.Time `json:"date"`
+	Duration    string    `json:"duration"`
+	Date        string    `json:"date"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
@@ -197,13 +197,14 @@ func CreateExercise(c *gin.Context) {
 	username := exercise.Username
 	description := exercise.Description
 	duration := exercise.Duration
+	date := exercise.Date
 	id := guuid.New().String()
 	insertError := dbConnect.Insert(&Exercise{
 		ID:          id,
 		Username:    username,
 		Description: description,
 		Duration:    duration,
-		Date:        time.Now(),
+		Date:        date,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	})
