@@ -36,9 +36,11 @@ export default class ExercisesList extends Component {
       .get("http://localhost:5000/api/exercises")
       .then((res) => {
         console.log(res.data.data);
-        this.setState({
-          exercises: res.data.data,
-        });
+        if (res.data.data !== null) {
+          this.setState({
+            exercises: res.data.data,
+          });
+        }
       })
       .catch((error) => {
         console.log(error);
