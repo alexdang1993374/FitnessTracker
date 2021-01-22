@@ -11,34 +11,53 @@ import (
 	guuid "github.com/google/uuid"
 )
 
-type Fitness struct {
+type User struct {
 	ID        string    `json:"id"`
-	Title     string    `json:"title"`
-	Body      string    `json:"body"`
-	Completed int       `json:"completed"`
+	Username  string    `json:"username"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// Create User Table
-func CreateFitnessTable(db *pg.DB) error {
+type Exercise struct {
+	ID          string    `json:"id"`
+	Username    string    `json:"username"`
+	Description string    `json:"description"`
+	Duration    int       `json:"duration"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+func CreateUserTable(db *pg.DB) error {
 	opts := &orm.CreateTableOptions{
 		IfNotExists: true,
 	}
-	createError := db.CreateTable(&Fitness{}, opts)
+	createError := db.CreateTable(&User{}, opts)
 	if createError != nil {
-		log.Printf("Error while creating fitness table, Reason: %v\n", createError)
+		log.Printf("Error while creating user table, Reason: %v\n", createError)
 		return createError
 	}
-	log.Printf("Fitness table created")
+	log.Printf("User table created")
 	return nil
 }
 
-func GetAllFitness(c *gin.Context) {
-	var fitness []Fitness
-	err := dbConnect.Model(&fitness).Select()
+func CreateExerciseTable(db *pg.DB) error {
+	opts := &orm.CreateTableOptions{
+		IfNotExists: true,
+	}
+	createError := db.CreateTable(&Exercise{}, opts)
+	if createError != nil {
+		log.Printf("Error while creating exercise table, Reason: %v\n", createError)
+		return createError
+	}
+	log.Printf("Exercise table created")
+	return nil
+}
+
+func GetAllUsers(c *gin.Context) {
+	var user []User
+	err := dbConnect.Model(&user).Select()
 	if err != nil {
-		log.Printf("Error while getting all fitness, Reason: %v\n", err)
+		log.Printf("Error while getting all users, Reason: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  http.StatusInternalServerError,
 			"message": "Something went wrong",
@@ -47,29 +66,25 @@ func GetAllFitness(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
-		"message": "All Fitness",
-		"data":    fitness,
+		"message": "All Users",
+		"data":    user,
 	})
 	return
 }
 
-func CreateFitness(c *gin.Context) {
-	var fitness Fitness
-	c.BindJSON(&fitness)
-	title := fitness.Title
-	body := fitness.Body
-	completed := fitness.Completed
+func CreateUser(c *gin.Context) {
+	var user User
+	c.BindJSON(&user)
+	username := user.Username
 	id := guuid.New().String()
-	insertError := dbConnect.Insert(&Fitness{
+	insertError := dbConnect.Insert(&User{
 		ID:        id,
-		Title:     title,
-		Body:      body,
-		Completed: completed,
+		Username:  username,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	})
 	if insertError != nil {
-		log.Printf("Error while inserting new fitness into db, Reason: %v\n", insertError)
+		log.Printf("Error while inserting new user into db, Reason: %v\n", insertError)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  http.StatusInternalServerError,
 			"message": "Something went wrong",
@@ -78,35 +93,35 @@ func CreateFitness(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, gin.H{
 		"status":  http.StatusCreated,
-		"message": "Fitness created Successfully",
+		"message": "User created Successfully",
 	})
 	return
 }
-func GetSingleFitness(c *gin.Context) {
-	fitnessId := c.Param("userId")
-	fitness := &Fitness{ID: fitnessId}
-	err := dbConnect.Select(fitness)
+func GetSingleUser(c *gin.Context) {
+	userId := c.Param("userId")
+	user := &User{ID: userId}
+	err := dbConnect.Select(user)
 	if err != nil {
-		log.Printf("Error while getting a single fitness, Reason: %v\n", err)
+		log.Printf("Error while getting a single user, Reason: %v\n", err)
 		c.JSON(http.StatusNotFound, gin.H{
 			"status":  http.StatusNotFound,
-			"message": "Fitness not found",
+			"message": "User not found",
 		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
-		"message": "Single Fitness",
-		"data":    fitness,
+		"message": "Single User",
+		"data":    user,
 	})
 	return
 }
-func EditFitness(c *gin.Context) {
-	fitnessId := c.Param("userId")
-	var fitness Fitness
-	c.BindJSON(&fitness)
-	completed := fitness.Completed
-	_, err := dbConnect.Model(&Fitness{}).Set("completed = ?", completed).Where("id = ?", fitnessId).Update()
+func EditUser(c *gin.Context) {
+	userId := c.Param("userId")
+	var user User
+	c.BindJSON(&user)
+	username := user.Username
+	_, err := dbConnect.Model(&User{}).Set("username = ?", username).Where("id = ?", userId).Update()
 	if err != nil {
 		log.Printf("Error, Reason: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -117,16 +132,16 @@ func EditFitness(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status":  200,
-		"message": "Fitness Edited Successfully",
+		"message": "User Edited Successfully",
 	})
 	return
 }
-func DeleteFitness(c *gin.Context) {
-	fitnessId := c.Param("userId")
-	fitness := &Fitness{ID: fitnessId}
-	err := dbConnect.Delete(fitness)
+func DeleteUser(c *gin.Context) {
+	userId := c.Param("userId")
+	user := &User{ID: userId}
+	err := dbConnect.Delete(user)
 	if err != nil {
-		log.Printf("Error while deleting a single fitness, Reason: %v\n", err)
+		log.Printf("Error while deleting a single user, Reason: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  http.StatusInternalServerError,
 			"message": "Something went wrong",
@@ -135,7 +150,119 @@ func DeleteFitness(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
-		"message": "Fitness deleted successfully",
+		"message": "User deleted successfully",
+	})
+	return
+}
+
+//exercise crud
+
+func GetAllExercises(c *gin.Context) {
+	var exercise []Exercise
+	err := dbConnect.Model(&exercise).Select()
+	if err != nil {
+		log.Printf("Error while getting all exercises, Reason: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": "Something went wrong",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
+		"message": "All Exercises",
+		"data":    exercise,
+	})
+	return
+}
+
+func CreateExercise(c *gin.Context) {
+	var exercise Exercise
+	c.BindJSON(&exercise)
+	username := exercise.Username
+	description := exercise.Description
+	duration := exercise.Duration
+	id := guuid.New().String()
+	insertError := dbConnect.Insert(&Exercise{
+		ID:          id,
+		Username:    username,
+		Description: description,
+		Duration:    duration,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	})
+	if insertError != nil {
+		log.Printf("Error while inserting new exercise into db, Reason: %v\n", insertError)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": "Something went wrong",
+		})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{
+		"status":  http.StatusCreated,
+		"message": "Exercise created Successfully",
+	})
+	return
+}
+func GetSingleExercise(c *gin.Context) {
+	exerciseId := c.Param("exerciseId")
+	exercise := &Exercise{ID: exerciseId}
+	err := dbConnect.Select(exercise)
+	if err != nil {
+		log.Printf("Error while getting a single exercise, Reason: %v\n", err)
+		c.JSON(http.StatusNotFound, gin.H{
+			"status":  http.StatusNotFound,
+			"message": "Exercise not found",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
+		"message": "Single Exercise",
+		"data":    exercise,
+	})
+	return
+}
+func EditExercise(c *gin.Context) {
+	exerciseId := c.Param("exerciseId")
+	var exercise Exercise
+	c.BindJSON(&exercise)
+	username := exercise.Username
+	description := exercise.Description
+	duration := exercise.Duration
+	_, err := dbConnect.Model(&User{}).Set("username = ?", username).Where("id = ?", exerciseId).Update()
+	_, err = dbConnect.Model(&User{}).Set("description = ?", description).Where("id = ?", exerciseId).Update()
+	_, err = dbConnect.Model(&User{}).Set("duration = ?", duration).Where("id = ?", exerciseId).Update()
+	if err != nil {
+		log.Printf("Error, Reason: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  500,
+			"message": "Something went wrong",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status":  200,
+		"message": "Exercise Edited Successfully",
+	})
+	return
+}
+func DeleteExercise(c *gin.Context) {
+	exerciseId := c.Param("exerciseId")
+	exercise := &Exercise{ID: exerciseId}
+	err := dbConnect.Delete(exercise)
+	if err != nil {
+		log.Printf("Error while deleting a single exercise, Reason: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": "Something went wrong",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
+		"message": "Exercise deleted successfully",
 	})
 	return
 }

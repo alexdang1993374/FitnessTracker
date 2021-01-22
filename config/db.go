@@ -22,6 +22,6 @@ func Connect() *pg.DB {
 		os.Exit(100)
 	}
 	log.Printf("Connected to db")
-	controllers.CreateFitnessTable(db)
+	controllers.CreateUserTable(db)
 	return db
 }
