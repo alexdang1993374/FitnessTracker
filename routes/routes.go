@@ -18,9 +18,9 @@ func Routes(router *gin.Engine) {
 
 	router.GET("/api/exercises", controllers.GetAllExercises)
 	router.POST("/api/exercises", controllers.CreateExercise)
-	router.GET("/api/exercises/:exercisesId", controllers.GetSingleExercise)
-	router.PUT("/api/exercises/:exercisesId", controllers.EditExercise)
-	router.DELETE("/api/exercises/:exercisesId", controllers.DeleteExercise)
+	router.GET("/api/exercises/:exerciseId", controllers.GetSingleExercise)
+	router.PUT("/api/exercises/:exerciseId", controllers.EditExercise)
+	router.DELETE("/api/exercises/:exerciseId", controllers.DeleteExercise)
 }
 
 func welcome(c *gin.Context) {

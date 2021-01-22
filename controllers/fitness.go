@@ -252,10 +252,10 @@ func EditExercise(c *gin.Context) {
 	description := exercise.Description
 	duration := exercise.Duration
 	date := exercise.Date
-	_, err := dbConnect.Model(&User{}).Set("username = ?", username).Where("id = ?", exerciseID).Update()
-	_, err = dbConnect.Model(&User{}).Set("description = ?", description).Where("id = ?", exerciseID).Update()
-	_, err = dbConnect.Model(&User{}).Set("duration = ?", duration).Where("id = ?", exerciseID).Update()
-	_, err = dbConnect.Model(&User{}).Set("date = ?", date).Where("id = ?", exerciseID).Update()
+	_, err := dbConnect.Model(&Exercise{}).Set("username = ?", username).Where("id = ?", exerciseID).Update()
+	_, err = dbConnect.Model(&Exercise{}).Set("description = ?", description).Where("id = ?", exerciseID).Update()
+	_, err = dbConnect.Model(&Exercise{}).Set("duration = ?", duration).Where("id = ?", exerciseID).Update()
+	_, err = dbConnect.Model(&Exercise{}).Set("date = ?", date).Where("id = ?", exerciseID).Update()
 	if err != nil {
 		log.Printf("Error, Reason: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
