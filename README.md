@@ -1,5 +1,5 @@
 # FitnessTracker
-<img  src="./pictures/fitness.PNG" alt="demo">
+<img  src="./pictures/fitnessdemo.PNG" alt="demo">
 
 <h1 id="intro">Introduction</h1>
 Fitness Tracker is a full-stack web application where users can keep track of their exercise habits.  The app features full CRUD functionality where users can retrieve, edit, delete, and add to their logged exercises.    
