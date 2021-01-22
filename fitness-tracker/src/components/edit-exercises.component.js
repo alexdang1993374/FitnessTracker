@@ -82,7 +82,7 @@ export default class EditExercises extends Component {
     console.log(exercise);
 
     axios
-      .post(
+      .put(
         "http://localhost:5000/api/exercises/" + this.props.match.params.id,
         exercise
       )
